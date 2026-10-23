@@ -1,0 +1,23 @@
+# Source data. The NFIP claims file is ~1.1 GB and is re-downloadable with
+# scripts/download.sh, so it does not belong in version control.
+data/
+!data/.gitkeep
+
+# Generated artifacts
+*_load.sql
+nfip_field_comments.sql
+profile_output.txt
+doc_report.txt
+generate.log
+
+# OS and editor noise
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
