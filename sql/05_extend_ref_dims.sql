@@ -4,20 +4,19 @@
 --
 --   psql -d portfolio -v ON_ERROR_STOP=1 -f sql/05_extend_ref_dims.sql
 --
--- Two gaps, both found by building the fact table and counting unmatched keys
--- rather than by assuming the dimensions were adequate:
+-- 00_create_portfolio_db.sql builds the shared dimensions. This adds what NFIP
+-- claims specifically need from the geography dimension:
 --
---  1. dim_date originally spanned 1990-2035. NFIP losses start in 1978, so
---     every claim from the 1970s and 1980s - about 510,000 of them - resolved
---     to a NULL date key and would have disappeared from any date-filtered
---     visual. Extended back to 1968, when the National Flood Insurance Program
---     was created.
+--  1. US territories. The claims data holds 57 distinct state values because
+--     the NFIP writes in Puerto Rico, Guam and the US Virgin Islands.
 --
---  2. dim_state held the 50 states and DC. The claims data contains 57 distinct
---     state values, because the NFIP covers US territories. Puerto Rico in
---     particular has substantial claim volume.
+--  2. Unknown members, so claims with no usable location still resolve to a
+--     dimension row instead of a NULL key.
 --
--- Idempotent: both inserts skip rows that already exist.
+-- The date range is set in 00_create_portfolio_db.sql; the backfill below is
+-- kept so a database created before that range was widened picks it up.
+--
+-- Idempotent: every insert skips rows that already exist.
 
 \set ON_ERROR_STOP on
 

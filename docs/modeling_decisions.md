@@ -120,22 +120,24 @@ overstates denials.
 
 ---
 
-## Reference dimensions were wrong, and the fact table said so
+## Reference dimensions are sized to the data
 
-`ref.dim_date` originally spanned 1990–2035. NFIP losses begin in **1978**, so
-every claim from the 1970s and 1980s — about **510,000** — resolved to a NULL
-date key. In Power BI those rows would vanish from any date-filtered visual
-without warning.
+`ref.dim_date` spans **1968–2035**. The lower bound is the year the National
+Flood Insurance Program was created; the earliest loss in the data is 1978. A
+date dimension that starts later leaves early claims with a NULL date key, and
+a NULL key disappears from a Power BI relationship silently rather than
+failing — so the range is chosen against `min(date_of_loss)`, not a default.
 
-`ref.dim_state` held the 50 states and DC. The data contains 57 distinct state
-values because the NFIP covers US territories, Puerto Rico most significantly.
+`ref.dim_state` covers the 50 states, DC, and the US territories. The claims
+data contains 57 distinct state values because the NFIP writes in Puerto Rico,
+Guam and the US Virgin Islands.
 
-Both were found by building the fact table and counting unmatched keys, not by
-inspecting the dimensions. `sql/05_extend_ref_dims.sql` fixes both, and
-`tests/data_quality.sql` now fails if orphaned keys reappear.
+Both live in `ref` rather than `nfip_mart` because they are conformed: a second
+dataset loaded into this database joins to the same calendar and the same
+geography, which is what makes cross-source analysis possible later.
 
-**The general lesson:** a dimension that looks complete can still be wrong for
-a specific fact. Count the unmatched rows.
+`tests/data_quality.sql` fails the build if any fact row has an unresolved
+dimension key.
 
 ---
 

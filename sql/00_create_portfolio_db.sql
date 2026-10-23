@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS ref.dim_date (
     quarter_label   text NOT NULL             -- 2026-Q1
 );
 COMMENT ON TABLE ref.dim_date IS
-  'Conformed date dimension, 1990-2035. Mark as the date table in Power BI.';
+  'Conformed date dimension, 1968-2035. Mark as the date table in Power BI.';
 
 INSERT INTO ref.dim_date
 SELECT to_char(d, 'YYYYMMDD')::int,
@@ -82,7 +82,11 @@ SELECT to_char(d, 'YYYYMMDD')::int,
        extract(isodow FROM d) >= 6,
        to_char(d, 'YYYY-MM'),
        to_char(d, 'YYYY') || '-Q' || extract(quarter FROM d)
-  FROM generate_series('1990-01-01'::date, '2035-12-31'::date, interval '1 day') AS d
+-- Lower bound is 1968, when the National Flood Insurance Program was created.
+-- A fact row whose date falls outside this dimension resolves to a NULL key,
+-- which drops it from a Power BI relationship silently - so the range is set
+-- against the earliest data this database is expected to hold, not a default.
+  FROM generate_series('1968-01-01'::date, '2035-12-31'::date, interval '1 day') AS d
 ON CONFLICT (date_key) DO NOTHING;
 
 ANALYZE ref.dim_date;
@@ -117,7 +121,7 @@ ANALYZE ref.dim_state;
 
 \echo ''
 \echo 'Database "portfolio" created.'
-\echo '  ref.dim_date   - 16,801 days, 1990-2035'
+\echo '  ref.dim_date   - 24,837 days, 1968-2035'
 \echo '  ref.dim_state  - 51 states + DC'
 \echo ''
 \echo 'Add a dataset with:  SELECT ref.add_dataset(''nfip'');'
