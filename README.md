@@ -167,6 +167,15 @@ API where the current file lives instead of hardcoding a URL.
 
 ---
 
+## On how this was built
+
+Built with AI assistance (Claude). I chose the dataset, set the approach, and
+reviewed the modeling decisions — the reasoning behind each is in
+[docs/modeling_decisions.md](docs/modeling_decisions.md), which is the file
+worth reading if you want to know how I think about this kind of data.
+
+---
+
 ## Attribution
 
 Source: U.S. Federal Emergency Management Agency, OpenFEMA Dataset
