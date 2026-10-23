@@ -1,0 +1,16 @@
+# GitHub's language detection (Linguist) classifies SQL as a "data" language,
+# and data languages are excluded from repository language statistics by
+# default. In a repo that is mostly SQL, that leaves the shell helper scripts
+# as the detected language - which misrepresents what this project is.
+#
+# Marking SQL as detectable puts it back in the statistics.
+*.sql linguist-detectable=true
+*.sql linguist-language=SQL
+
+# The helper scripts are tooling around the SQL, not the substance of the
+# project. Keeping them out of the stats makes the language bar reflect what a
+# reader is actually here to look at.
+scripts/* linguist-vendored=true
+
+# Documentation is prose and already excluded, but being explicit costs nothing.
+docs/* linguist-documentation=true
